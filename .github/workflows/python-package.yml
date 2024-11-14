@@ -3,6 +3,9 @@
 
 name: Python package
 
+env:
+  PYTHONPATH: ".:./src"
+  
 on:
   push:
     branches: [ "main" ]
