@@ -1,0 +1,13 @@
+[project]
+name = "nobitex"
+requires-python = ">=3.8"
+
+[[tool.mypy.overrides]]
+module = "dynaconf"
+ignore_errors = true
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F"]
