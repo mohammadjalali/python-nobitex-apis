@@ -1,5 +1,4 @@
 import pytest
-import nobitex.config as config
 
 from nobitex.authentication import Authentication
 
@@ -8,6 +7,8 @@ from nobitex.authentication import Authentication
     reason="Needs to set username and password and twofactor_authentication_code"
 )
 def test_generate_key():
+    import nobitex.config as config
+
     # Arrange
     authentication = Authentication()
     username = config.USERNAME

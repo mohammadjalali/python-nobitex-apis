@@ -1,6 +1,7 @@
-from typing import Optional, Mapping, Literal, Any
+from typing import Any, Literal, Mapping, Optional
 
 import requests
+
 import nobitex.config as config
 
 ExecutionType = Literal["stop_limit", "market", "limit", "stop_limit"]
@@ -8,8 +9,6 @@ TradeType = Literal["spot", "margin"]
 
 
 class MarketSpot:
-    def __init__(self) -> None:
-        pass
 
     def add_order(
         self,
@@ -39,18 +38,13 @@ class MarketSpot:
         ).json()
 
     def orders_status(
-        self, order_id: Optional[int], client_order_id: Optional[str]
+        self, order_id: Optional[int] = None, client_order_id: Optional[str] = None
     ) -> Mapping[Any, Any]:
         headers = {
             "Authorization": f"Token {config.KEY}",
             "content-type": "application/json",
         }
-        json_data = {}
-
-        if order_id:
-            json_data["id"] = order_id
-        if client_order_id:
-            json_data["clientOrderId"] = client_order_id
+        json_data = self._add_full_variables(id=order_id, clientOrderId=client_order_id)
 
         return requests.post(
             "https://api.nobitex.ir/market/orders/status",
@@ -70,22 +64,21 @@ class MarketSpot:
         form_id: int,
         order: str,
     ) -> Mapping[Any, Any]:
-
         headers = {
             "Authorization": f"Token {config.KEY}",
         }
 
-        params = {
-            "status": status,
-            "type": order_type,
-            "execution": execution,
-            "tradeType": trade_type,
-            "srcCurrency": source_currency,
-            "dstCurrency": destination_currency,
-            "details": details,
-            "form_id": form_id,
-            "order": order,
-        }
+        params = self._add_full_variables(
+            status=status,
+            type=order_type,
+            execution=execution,
+            tradeType=trade_type,
+            srcCurrency=source_currency,
+            dstCurrency=destination_currency,
+            details=details,
+            form_id=form_id,
+            order=order,
+        )
 
         return requests.get(
             "https://api.nobitex.ir/market/orders/list", params=params, headers=headers
@@ -98,14 +91,10 @@ class MarketSpot:
             "Authorization": f"Token {config.KEY}",
             "content-type": "application/json",
         }
-        json_data = {
-            "status": status,
-        }
 
-        if order_id:
-            json_data["order"] = order_id
-        if client_order_id:
-            json_data["clientOrderId"] = client_order_id
+        json_data = self._add_full_variables(
+            status=status, order=order_id, clientOrderId=client_order_id
+        )
 
         return requests.post(
             "https://api.nobitex.ir/market/orders/update-status",
@@ -150,14 +139,16 @@ class MarketSpot:
         }
 
         params = self._add_full_variables(
-            source_currency, destination_currency, from_id
+            srcCurrency=source_currency,
+            dstCurrency=destination_currency,
+            fromId=from_id,
         )
 
         return requests.get(
             "https://api.nobitex.ir/market/trades/list", params=params, headers=headers
         ).json()
 
-    def _add_full_variables(**kwargs: Mapping[Any, Any]):
+    def _add_full_variables(self, **kwargs):
         json_data = {}
         for key, value in kwargs.items():
             if value:

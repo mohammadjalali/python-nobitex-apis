@@ -1,4 +1,4 @@
-from typing import Optional, Literal
+from typing import Literal, Optional
 
 import requests
 
@@ -41,4 +41,7 @@ class Authentication:
             "https://api.nobitex.ir/auth/login/", headers=headers, json=json_data
         )
         self._key = response.json()["key"]
+
+        assert self._key
+
         return self._key
